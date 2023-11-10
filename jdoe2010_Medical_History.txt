@@ -1,0 +1,26 @@
+Current Height
+5
+0
+
+Current Weight
+100
+
+Allergies
+Peanuts, 12-03-2017
+
+Health Concerns
+Asthma, 01-01-2019
+Pink eye, 02-02-2020
+
+Medications
+Adderall, 30-11-2019
+Eye drops, 02-02-2020
+
+Immunizations
+Chickenpox
+Hepatitis A/B
+HPV
+Measles
+Polio
+Tetanus
+
