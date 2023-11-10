@@ -25,22 +25,31 @@ import javafx.scene.layout.Pane;
 
 public class NurseUI {
 	
-    public static Pane nurseUI() {
+    private static final Pos BASELINE_RIGHT = null;
 
+	public static Pane nurseUI() {
 
-        //Stage nurseStage = new Stage();
-        //nurseStage.setTitle("SunCare Connect --------- Welcome Nurse Joy");
         VBox mainLayout = new VBox(10);
+        mainLayout.setStyle("-fx-background-color: #B3BFB8;");
+        HBox heading = new HBox(20);
+        heading.setStyle("-fx-background-color: #889C90;");
+        HBox portals = new HBox(10);
         VBox aptPortal = new VBox(10);
-        HBox searchBar = new HBox(10);
+        VBox recordPortal = new VBox(10);
+        Button logoutButton = new Button("Log Out");
+        logoutButton.setStyle("-fx-background-color: #A2E3C4;");
+        Label sunCareConnect = new Label("SunCare Connect");
+        sunCareConnect.setFont(new Font(15));
+        heading.getChildren().addAll(sunCareConnect, logoutButton);
+        heading.setAlignment(Pos.BASELINE_RIGHT);
+        HBox searchBar = new HBox();        
         TextField searchField = new TextField();
         Button searchButton = new Button("Search Patient");
+        searchButton.setStyle("-fx-background-color: #A2E3C4;");
         searchBar.getChildren().addAll(searchField,searchButton);
-        
-        // TODO: The program will change "XXXX" to the patient's name
-        aptPortal.getChildren().addAll(searchBar, new Label("Patient: XXXX"));
 
-        // -------------Appointment Form --------------
+
+        // -------------Appointment Portal --------------
 
         // Text Fields (The fields are disabled until an appointment starts)
         TextField feet = new TextField();
@@ -49,6 +58,8 @@ public class NurseUI {
         inches.setDisable(true);
         TextField weight = new TextField();
         weight.setDisable(true);
+        TextField bloodPressure = new TextField();
+        bloodPressure.setDisable(true);
         TextField allergies = new TextField();
         allergies.setDisable(true);
         TextField healthConcerns = new TextField();
@@ -62,8 +73,10 @@ public class NurseUI {
         HBox weightField = new HBox(10);
         weightField.getChildren().addAll(new Label("Weight: "), weight, new Label("lbs"));
         
-        // TODO: Add field for blood pressure for children 13 or older.
-
+        // Blood Pressure
+        HBox bloodPressureField = new HBox(10);
+        bloodPressureField.getChildren().addAll(new Label("Blood Pressure: "), bloodPressure, new Label("If under 13 y.o., enter \"N/A\""));
+        
         // Allergies
         HBox allergiesField = new HBox(10);
         allergiesField.getChildren().addAll(new Label("Allergies: "), allergies);
@@ -71,8 +84,6 @@ public class NurseUI {
         // Health Concerns
         HBox healthField = new HBox(10);
         healthField.getChildren().addAll(new Label("Health Concerns: "), healthConcerns);
-        
-        // Spacer
 
         // Save/Submit/Reset buttons
         HBox saveReset = new HBox(10);
@@ -80,20 +91,61 @@ public class NurseUI {
         saveForm.setDisable(true); // The button is disabled until the form is accessible.
         Button submitForm = new Button("Submit");
         submitForm.setDisable(true); // The button is disabled until the form is complete.
+        submitForm.setStyle("-fx-background-color: #A2E3C4;");
         Button resetButton = new Button("Reset");
         resetButton.setDisable(true);
         saveReset.getChildren().addAll(saveForm,resetButton);
-                
-        aptPortal.getChildren().addAll(heightFields, weightField, allergiesField, healthField,saveReset,submitForm);
+        
+        
+        //-------------Patient Record Portal -------------------
+        HBox recordHeader = new HBox(20);
+        recordHeader.setStyle("-fx-background-color: #889C90;");
+        // TODO: Replace <Patient Name> with the patient's name
+        Label recordTitle = new Label("  <Patient Name>'s Appointment History");
+        recordTitle.setFont(new Font(15));
+        recordTitle.setAlignment(Pos.BASELINE_CENTER);
+        recordHeader.getChildren().add(recordTitle);
+        recordPortal.getChildren().add(recordHeader);
+        
+        // TODO: Replace <Patient Name> with the patient's name
+        HBox aptHeader = new HBox(20);
+        aptHeader.setStyle("-fx-background-color: #889C90;");
+        Label aptTitle = new Label("  Appointment Form for <Patient Name>");
+        aptTitle.setFont(new Font(15));
+        aptTitle.setAlignment(Pos.BASELINE_CENTER);
+        aptHeader.getChildren().add(aptTitle);
+        aptPortal.getChildren().addAll(aptHeader,heightFields, weightField, bloodPressureField, allergiesField, healthField,saveReset,submitForm);
+        aptPortal.setStyle("-fx-padding: 10;" + 
+                "-fx-border-style: solid inside;" + 
+                "-fx-border-width: 1;" +
+                "-fx-border-insets: 5;" + 
+                "-fx-border-radius: 5;" + 
+                "-fx-border-color: black;");
+        
+        recordPortal.setStyle("-fx-padding: 10;" + 
+                "-fx-border-style: solid inside;" + 
+                "-fx-border-width: 1;" +
+                "-fx-border-insets: 5;" + 
+                "-fx-border-radius: 5;" + 
+                "-fx-border-color: black;");
+        portals.getChildren().addAll(aptPortal,recordPortal);
+        mainLayout.getChildren().addAll(heading,searchBar,portals);
 
-        mainLayout.getChildren().addAll(aptPortal);
-
+        
+        
+        // -------------Buttons----------------
+        
+        // --------Log Out Button Actions-------------
+        logoutButton.setOnAction( e-> {
+        	// TODO: figure out how to return to login page
+        });
 
 
         // --------Search Button Actions--------------------
         searchButton.setOnAction( e-> {
             String patientID = searchField.getText();
             String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+            
             // TODO: Check if patient exists. For now, assume all patient IDs entered are valid
             // TODO: If the patient exists, enable save button. For now, the save button will always be enabled upon Search button click.
             	saveForm.setDisable(false);
@@ -114,8 +166,8 @@ public class NurseUI {
 					inches.setText(sc.nextLine());
 					weight.setDisable(false);
 					weight.setText(sc.nextLine());
-					// bloodPressure.setDisable(false);
-					// bloodPressure.setText(sc.nextLine());
+					bloodPressure.setDisable(false);
+					bloodPressure.setText(sc.nextLine());
 					allergies.setDisable(false);
 					allergies.setText(sc.nextLine());
 					healthConcerns.setDisable(false);
@@ -131,7 +183,7 @@ public class NurseUI {
                 feet.setDisable(false);
                 inches.setDisable(false);
                 weight.setDisable(false);
-                // bloodPressure.setDisable(false);
+                bloodPressure.setDisable(false);
                 allergies.setDisable(false);
                 healthConcerns.setDisable(false);
             }
@@ -158,8 +210,9 @@ public class NurseUI {
                 if(inches.getText().isEmpty()) formDone = false;
                 fw.write(weight.getText() + "\n");
                 if(weight.getText().isEmpty()) formDone = false;
+                fw.write(bloodPressure.getText() + "\n");
+                if(bloodPressure.getText().isEmpty()) formDone = false;
                 fw.write(allergies.getText() + "\n");
-                // if(bloodPressure.getText() == "" && <age > 12> ) formDone = false;
                 if(allergies.getText().isEmpty()) formDone = false;
                 fw.write(healthConcerns.getText() + "\n");
                 if(allergies.getText().isEmpty()) formDone = false;
@@ -167,23 +220,6 @@ public class NurseUI {
                 
                 // If the form is done, nurse can submit the form to the patient's file
                 if(formDone) submitForm.setDisable(false);
-              /*  else { // If the form isn't done, the nurse won't submit the form, and the webpage will refresh.
-                	searchField.clear();
-                	searchField.setDisable(false);
-                	searchButton.setDisable(false);
-                	feet.clear();
-                	feet.setDisable(true);
-                	inches.clear();
-                	inches.setDisable(true);
-                	weight.clear();
-                	weight.setDisable(true);
-                	allergies.clear();
-                	allergies.setDisable(true);
-                	healthConcerns.clear();
-                	healthConcerns.setDisable(true);
-                	saveForm.setDisable(true);
-                	submitForm.setDisable(true);
-                } */
             } catch (IOException e1) {
                 System.out.println("Error");
                 e1.printStackTrace();
@@ -203,6 +239,8 @@ public class NurseUI {
         	inches.setDisable(true);
         	weight.clear();
         	weight.setDisable(true);
+        	bloodPressure.clear();
+        	bloodPressure.setDisable(true);
         	allergies.clear();
         	allergies.setDisable(true);
         	healthConcerns.clear();
@@ -222,6 +260,8 @@ public class NurseUI {
         	inches.setDisable(true);
         	weight.clear();
         	weight.setDisable(true);
+        	bloodPressure.clear();
+        	bloodPressure.setDisable(true);
         	allergies.clear();
         	allergies.setDisable(true);
         	healthConcerns.clear();
