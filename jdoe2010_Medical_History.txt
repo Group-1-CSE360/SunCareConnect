@@ -1,8 +1,8 @@
 Current Height
-5
-0
+4
+10
 Current Weight
-100
+95
 Allergies
 Peanuts, 12-03-2017
 Health Concerns
