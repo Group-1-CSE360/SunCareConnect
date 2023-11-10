@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -146,50 +147,63 @@ public class NurseUI {
             String patientID = searchField.getText();
             String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
             
-            // TODO: Check if patient exists. For now, assume all patient IDs entered are valid
-            // TODO: If the patient exists, enable save button. For now, the save button will always be enabled upon Search button click.
-            	saveForm.setDisable(false);
-            	resetButton.setDisable(false);
-            // Text Files -- Appointment files are named "<Patient ID>_Apt_<dd-MM-yyyy>.txt"
-            String aptFileName = patientID + "_Apt_" + date + ".txt";
-            File aptFile = new File(aptFileName);
-            if(aptFile.exists()) {
-                // If the file exists, that means the nurse has already started the apt form but hasn't finished it yet. 
-            	// This code will enable all the text fields for editing. 
-            	// Also, the info from the save file will auto-populate the fields.
-            	Scanner sc;
-            	try {
-					sc = new Scanner(aptFile);
-					feet.setDisable(false);
-					feet.setText(sc.nextLine());
-					inches.setDisable(false);
-					inches.setText(sc.nextLine());
-					weight.setDisable(false);
-					weight.setText(sc.nextLine());
-					bloodPressure.setDisable(false);
-					bloodPressure.setText(sc.nextLine());
-					allergies.setDisable(false);
-					allergies.setText(sc.nextLine());
-					healthConcerns.setDisable(false);
-					healthConcerns.setText(sc.nextLine());
-					sc.close();
-					
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} 
+            String patientFileName = patientID + "AptHistory.txt";
+            File patientFile = new File(patientFileName);
+            if(patientFile.exists()) {
+	            	saveForm.setDisable(false);
+	            	resetButton.setDisable(false);
+	            // Text Files -- Appointment files are named "<Patient ID>_Apt_<dd-MM-yyyy>.txt"
+	            String aptFileName = patientID + "_Apt_" + date + ".txt";
+	            File aptFile = new File(aptFileName);
+	            if(aptFile.exists()) {
+	                // If the file exists, that means the nurse has already started the apt form but hasn't finished it yet. 
+	            	// This code will enable all the text fields for editing. 
+	            	// Also, the info from the save file will auto-populate the fields.
+	            	Scanner sc;
+	            	try {
+						sc = new Scanner(aptFile);
+						feet.setDisable(false);
+						feet.setText(sc.nextLine());
+						inches.setDisable(false);
+						inches.setText(sc.nextLine());
+						weight.setDisable(false);
+						weight.setText(sc.nextLine());
+						bloodPressure.setDisable(false);
+						bloodPressure.setText(sc.nextLine());
+						allergies.setDisable(false);
+						allergies.setText(sc.nextLine());
+						healthConcerns.setDisable(false);
+						healthConcerns.setText(sc.nextLine());
+						sc.close();
+						
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} 
+	            }
+	            else { // If apt file doesn't exist, the form will appear to create the apt record
+	                feet.setDisable(false);
+	                inches.setDisable(false);
+	                weight.setDisable(false);
+	                bloodPressure.setDisable(false);
+	                allergies.setDisable(false);
+	                healthConcerns.setDisable(false);
+	            }
+	            
+	            searchField.setDisable(true);
+	            searchButton.setDisable(true);
+	            
+	            // TODO: Display the apt history file to the Patient History Portal
+	            
+             } 
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Patient ID Error");
+                alert.setHeaderText(null);
+                alert.setContentText("The patient ID: " + patientID + " does not exist.");
+                searchField.clear();
+                alert.showAndWait();
             }
-            else { // If apt file doesn't exist, the form will appear to create the apt record
-                feet.setDisable(false);
-                inches.setDisable(false);
-                weight.setDisable(false);
-                bloodPressure.setDisable(false);
-                allergies.setDisable(false);
-                healthConcerns.setDisable(false);
-            }
-            
-            searchField.setDisable(true);
-            searchButton.setDisable(true);
         });
 
         // -------Save Form Actions-------------
@@ -228,7 +242,28 @@ public class NurseUI {
         
         // Submit form button
         submitForm.setOnAction(e -> {
-        	// TODO: Add this text file's name to the list of apt files in the patient record.
+        	// Generates Appointment File Name
+            String patientID = searchField.getText();
+            String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        	
+            // Adds this file name to the patient's apt history
+        	String patientFileName = patientID + "AptHistory.txt";
+        	File patientFile = new File(patientFileName);
+        	try {
+				FileWriter fw = new FileWriter(patientFile, true);
+				fw.write("\n");
+				fw.write("Appointent on " + date + "\n");
+				fw.write("Height: " + feet.getText() + "feet " + inches.getText() + " inches\n");
+				fw.write("Weight: " + weight.getText() + " lbs\n");
+				fw.write("Blood Pressure: " + bloodPressure.getText() + "\n");
+				fw.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        	
+        	// TODO: Generate the health history text file for the DoctorUI
+        	
         	// Resets page
         	searchField.clear();
         	searchField.setDisable(false);
