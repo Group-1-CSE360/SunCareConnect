@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -110,7 +111,7 @@ public class DoctorUI {
         additionalInfoGrid.add(cityTextField, 1, 1);
         additionalInfoGrid.add(stateLabel, 2, 0);
         additionalInfoGrid.add(stateTextField, 2, 1);
-        additionalInfoGrid.add(postalLabel, 3, 0); 
+        additionalInfoGrid.add(postalLabel, 3, 0);
         additionalInfoGrid.add(postalTextField, 3, 1);
 
         leftBox.getChildren().add(personalLabel);
@@ -335,26 +336,28 @@ public class DoctorUI {
 
 //-- READING PATIENT DATA --------------------------------------------------------------------------
         // Read patient data from the text file
-        String[] patientData = readPatientInfo("/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/patient_info.txt");
 
-        // Check if the array has the expected number of elements
-        if (patientData.length >= 6) {
-            nameTextField.setText(patientData[1]);
-            dobTextField.setText(patientData[2]);
-            genderTextField.setText(patientData[3]);
-            addressTextField.setText(patientData[4]);
-            cityTextField.setText(patientData[5]);
-            stateTextField.setText(patientData[6]);
-            postalTextField.setText(patientData[7]);
+        HashMap<String, String> patientData = readPatientInfo("/Users/skyy/IdeaProjects/SunCareConnect/jdoe2010_Medical_History.txt");
 
-            heightTextField.setText(patientData[8] + "' " + patientData[9] + "''");
-            weightTextField.setText(patientData[10]);
-            allergiesTextArea.setText(patientData[11]);
-            healthConcernsTextArea.setText("none");
-            medicalHistoryTextArea.setText(patientData[12] + "\n" + patientData[13]);
-            medicationsTextArea.setText(patientData[14] + "\n" + patientData[15]);
-            immunizationsTextArea.setText(patientData[16] + "\n" + patientData[17] + "\n" + patientData[18] + "\n" + patientData[19] + "\n" + patientData[20] + "\n" + patientData[21]);
+// Fill in pt. info - allergies, health concerns, medications, immunizations
+        allergiesTextArea.setText(patientData.get("Allergies"));
+        healthConcernsTextArea.setText(patientData.get("Health Concerns"));
+        medicationsTextArea.setText(patientData.get("Medications"));
+        immunizationsTextArea.setText(patientData.get("Immunizations"));
+       String[] patientData2 = readPatientPersonalInfo("/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/patient_info.txt");
 
+        // Fill in pt. info - name, dob, gender, address, height, weight
+        if (patientData2.length >= 5) {
+            nameTextField.setText(patientData2[1]);
+            dobTextField.setText(patientData2[2]);
+            genderTextField.setText(patientData2[3]);
+            addressTextField.setText(patientData2[4]);
+            cityTextField.setText(patientData2[5]);
+            stateTextField.setText(patientData2[6]);
+            postalTextField.setText(patientData2[7]);
+
+            heightTextField.setText(patientData2[8] + "' " + patientData2[9] + "''");
+            weightTextField.setText(patientData2[10]);
 
             // Make text fields uneditable
             nameTextField.setEditable(false);
@@ -394,7 +397,42 @@ public class DoctorUI {
     }
 
     //Method to read patient info to fill out page
-    private static String[] readPatientInfo(String filePath) {
+    private static HashMap<String, String> readPatientInfo(String filePath) {
+        HashMap<String, String> patientInfo = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            String currentKey = null;
+            StringBuilder currentValue = new StringBuilder();
+
+            while ((line = br.readLine()) != null) {
+                // Check if the line is one of the headers
+                if (line.equals("Allergies") || line.equals("Health Concerns") ||
+                        line.equals("Medications") || line.equals("Immunizations")) {
+                    // Save previous key-value pair if it exists
+                    if (currentKey != null) {
+                        patientInfo.put(currentKey, currentValue.toString().trim());
+                    }
+                    currentKey = line; // Update current key
+                    currentValue = new StringBuilder(); // Reset StringBuilder for new value
+                } else {
+                    // Append value to StringBuilder
+                    currentValue.append(line).append("\n");
+                }
+            }
+
+            // Don't forget to add the last key-value pair
+            if (currentKey != null) {
+                patientInfo.put(currentKey, currentValue.toString().trim());
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+        return patientInfo;
+    }
+
+    //Method to read patient info to fill out page
+    private static String[] readPatientPersonalInfo(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             List<String> lines = new ArrayList<>();
             String line;
@@ -407,6 +445,7 @@ public class DoctorUI {
         }
         return new String[0];
     }
+
 
     //Method to write visit note to text file
     private static void writeToFile(String patientName, String dob, String visitNotes) {
