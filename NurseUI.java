@@ -41,11 +41,12 @@ public class NurseUI {
         HBox portals = new HBox(10);
         VBox aptPortal = new VBox(10);
         VBox recordPortal = new VBox(10);
+        Button mailButton = new Button("Mail");
         Button logoutButton = new Button("Log Out");
         logoutButton.setStyle("-fx-background-color: #A2E3C4;");
         Label sunCareConnect = new Label("SunCare Connect");
         sunCareConnect.setFont(new Font(15));
-        heading.getChildren().addAll(sunCareConnect, logoutButton);
+        heading.getChildren().addAll(sunCareConnect, mailButton, logoutButton);
         heading.setAlignment(Pos.BASELINE_RIGHT);
         HBox searchBar = new HBox();        
         TextField searchField = new TextField();
@@ -232,7 +233,7 @@ public class NurseUI {
 	            int startIndex = medRecordContents.indexOf("Health Concerns"); // This stores the index where the heading, "Health Concerns", is in the array list.
 	            int endIndex = medRecordContents.indexOf("Medications"); // This stores the index where the heading "Medications" is in the array list
 	            medHistoryText.clear(); 
-	            for(int i = startIndex + 1 /* We want to start are the String after "Health Concerns" */; i < endIndex; i++) {
+	            for(int i = startIndex + 1; i < endIndex; i++) {
 	            	medHistoryText.appendText(medRecordContents.get(i) + "\n"); // For each health concern listing, add it to the medical history text area section, with a new line at the end of it so all the data isn't mushed together on one line.
 	            }
 	            
