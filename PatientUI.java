@@ -25,7 +25,7 @@ public class PatientUI {
 	static ArrayList<String> patientInfoContents = new ArrayList<>();
 	static int countIndex = 0;
 
-	public static Pane patientUI(String patientID) {
+	public static Pane patientUI(Stage primaryStage, String patientID) {
 		// patientID = "jdoe2010"; // Temporary
 		VBox mainLayout = new VBox();
 		mainLayout.setStyle("-fx-background-color: #B3BFB8;");
