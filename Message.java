@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
 public class Message extends Application{
+    int current_user = 12345;
     String dir = System.getProperty("user.dir");
     HBox button_container = new HBox(5);
     Button reply_button = add_button("Reply", "A2E3C4", "3C493F");
@@ -45,9 +46,9 @@ public class Message extends Application{
     TextField comp_msg = new TextField();
     Label comp_msg_subject_label = new Label("Subject");
     Label comp_msg_to_label = new Label("To");
-    Label read_msg_subject_label = new Label("Subject");
-    Label read_msg_date_label = new Label("Date");
-    Label read_msg_from_label = new Label("From");
+    Label read_msg_subject_label = new Label("Subject: ");
+    Label read_msg_date_label = new Label("Date: ");
+    Label read_msg_from_label = new Label("From: ");
     TextArea read_msg_contents = new TextArea();
 
     TextArea read_msg_subject = new TextArea();
@@ -77,7 +78,7 @@ public class Message extends Application{
         grid.add(read_message_container, 1, 0);
         grid.add(placeholder_right, 1, 0);
         compose_message_container.setVisible(false);
-        get_messages(12345);
+        get_messages(current_user);
 
         compose_button.setOnAction(e -> {
             placeholder_right.setVisible(false);
@@ -110,12 +111,25 @@ public class Message extends Application{
 }
 public List<String> get_messages(Integer user) {
     String line;
+    String newline;
     List<String> msg_list = new ArrayList<String>();
     Dictionary msg_dict = new Hashtable();
     try {
         BufferedReader mReader = new BufferedReader(new FileReader(dir + "/" + user + "_msgs.txt"));
         while((line = mReader.readLine()) != null) {
-            msg_list.add(line);
+            if (line.equals("###SUBJECT###")) {
+                newline = mReader.readLine();
+                msg_list.add(newline);
+            } else if (line.equals("###DATE####")) {
+                newline = mReader.readLine();
+                msg_list.add(newline);
+            } else if (line.equals("###CONTENTS###")) {
+                newline = mReader.readLine();
+                msg_list.add(newline);
+            } else if (line.equals("###FROM###")) {
+                newline = mReader.readLine();
+                msg_list.add(newline);
+            }
 
         }
     } catch (IOException e) {
@@ -126,13 +140,25 @@ public List<String> get_messages(Integer user) {
 
 public void send_message(Integer user) {
     try (BufferedWriter bw = new BufferedWriter(new FileWriter( dir + "/" + user + "_msgs.txt", true))) {
+        bw.write("###FROM###");
+        bw.newLine();
+        bw.write(Integer.toString(current_user));
+        bw.newLine();
+        bw.write("###TO###");
+        bw.newLine();
         bw.write(comp_msg_to.getText());
+        bw.newLine();
+        bw.write("###DATE###");
         bw.newLine();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         bw.write(dtf.format(now));
         bw.newLine();
+        bw.write("###SUBJECT###");
+        bw.newLine();
         bw.write(comp_msg_subject.getText());
+        bw.newLine();
+        bw.write("###CONTENTS###");
         bw.newLine();
         bw.write(comp_msg.getText());
         bw.newLine();
@@ -218,10 +244,10 @@ public GridPane setup_message_composer_scene() {
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setStyle("-fx-background-color: #F0F7F4");
         grid.add(read_msg_from_label, 0, 0);
-        grid.add(read_msg_from, 1, 0);
-        grid.add(read_msg_date, 2, 0);
-        grid.add(read_msg_subject_label, 1, 0);
-        grid.add(read_msg_contents, 0, 2);
+//        grid.add(read_msg_from, 1, 0);
+//        grid.add(read_msg_date, 2, 0);
+        grid.add(read_msg_subject_label, 0, 1);
+        grid.add(read_msg_contents, 0, 3);
         return grid;
     }
 
@@ -244,17 +270,35 @@ public GridPane setup_message_composer_scene() {
         }
         for (Button btn : inbox_buttons) {
             btn.setOnAction(e -> {
-                this.show_message();
+                this.show_message(12345);
             });
             message_list.getChildren().add(btn);
         }
     }
 
-    private void show_message() {
-        read_msg_from.setText("Text");
-        read_msg_subject.setText("Subject");
-        read_msg_contents.setText("Contents");
-        read_msg_date.setText("Date");
+    private void show_message(Integer user) {
+        try {
+            BufferedReader mReader = new BufferedReader(new FileReader(dir + "/" + user + "_msgs.txt"));
+            String line;
+            String newline;
+            line = mReader.readLine();
+                if (line.equals("###SUBJECT###")) {
+                    newline = mReader.readLine();
+                    read_msg_subject_label.setText(read_msg_subject_label.getText() + newline);
+                } else if (line.equals("###DATE####")) {
+                    newline = mReader.readLine();
+                    read_msg_date_label.setText(read_msg_date_label.getText() + newline);
+                } else if (line.equals("###FROM###")) {
+                    newline = mReader.readLine();
+                    read_msg_from_label.setText(read_msg_from_label.getText() + newline);
+                }  else if (line.equals("###CONTENTS###")) {
+                    while((line = mReader.readLine()) != null) {
+                        read_msg_contents.setText(read_msg_contents.getText() + line);
+                    }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         compose_message_container.setVisible(false);
         placeholder_right.setVisible(false);
         read_message_container.setVisible(true);
