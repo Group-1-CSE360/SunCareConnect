@@ -49,7 +49,7 @@ public class Message extends Application{
     Label read_msg_subject_label = new Label("Subject: ");
     Label read_msg_date_label = new Label("Date: ");
     Label read_msg_from_label = new Label("From: ");
-    TextArea read_msg_contents = new TextArea();
+    Label read_msg_contents = new Label("Message: ");
 
     TextArea read_msg_subject = new TextArea();
     TextArea read_msg_from = new TextArea();
@@ -165,7 +165,7 @@ public void send_message(Integer user) {
         bw.write("{{{{{ENDMESSAGE}}}}}");
         bw.newLine();
         discard_message();
-        System.out.println("Saved file successfully");
+//        System.out.println("Saved file successfully");
         bw.close();
     }catch (IOException e) {
         e.printStackTrace();
@@ -246,8 +246,9 @@ public GridPane setup_message_composer_scene() {
         grid.add(read_msg_from_label, 0, 0);
 //        grid.add(read_msg_from, 1, 0);
 //        grid.add(read_msg_date, 2, 0);
-        grid.add(read_msg_subject_label, 0, 1);
-        grid.add(read_msg_contents, 0, 3);
+        grid.add(read_msg_subject_label, 0, 2);
+        grid.add(read_msg_date_label, 0, 1);
+        grid.add(read_msg_contents, 0, 4);
         return grid;
     }
 
@@ -281,20 +282,29 @@ public GridPane setup_message_composer_scene() {
             BufferedReader mReader = new BufferedReader(new FileReader(dir + "/" + user + "_msgs.txt"));
             String line;
             String newline;
-            line = mReader.readLine();
+            while((line = mReader.readLine()) != null) {
                 if (line.equals("###SUBJECT###")) {
                     newline = mReader.readLine();
                     read_msg_subject_label.setText(read_msg_subject_label.getText() + newline);
-                } else if (line.equals("###DATE####")) {
+                }
+                if (line.equals("###DATE####")) {
                     newline = mReader.readLine();
                     read_msg_date_label.setText(read_msg_date_label.getText() + newline);
-                } else if (line.equals("###FROM###")) {
+                }
+                if (line.equals("###FROM###")) {
                     newline = mReader.readLine();
                     read_msg_from_label.setText(read_msg_from_label.getText() + newline);
-                }  else if (line.equals("###CONTENTS###")) {
-                    while((line = mReader.readLine()) != null) {
-                        read_msg_contents.setText(read_msg_contents.getText() + line);
+                }
+                if (line.equals("###CONTENTS###")) {
+                    while ((line = mReader.readLine()) != null) {
+                        if(line.equals("{{{{{ENDMESSAGE}}}}}")) {
+                            break;
+                        } else {
+                            read_msg_contents.setText(read_msg_contents.getText() + line);
+
+                        }
                     }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
