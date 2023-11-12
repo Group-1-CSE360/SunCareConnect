@@ -49,7 +49,7 @@ public class LoginUI extends Application {
 
 
         // Logo
-        Image logo = new Image("file:/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/logo.png");
+        Image logo = new Image("file:logo.png");
         ImageView logoView = new ImageView(logo);
         logoView.setFitWidth(110);
         logoView.setFitHeight(120);
@@ -163,7 +163,7 @@ public class LoginUI extends Application {
     // A method to verify if the user is in the text file
     boolean verifyUser(String loginID, String userType) {
 
-        File file = new File("/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/users.txt");
+        File file = new File("users.txt");
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String[] userInfo = scanner.nextLine().split(",");
