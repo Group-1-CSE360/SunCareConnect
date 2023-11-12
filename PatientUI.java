@@ -17,6 +17,7 @@ import javafx.scene.layout.HBox;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javafx.stage.Stage;
 
 import javafx.scene.layout.Pane;
 
