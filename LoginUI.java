@@ -115,7 +115,7 @@ public class LoginUI extends Application {
                     primaryStage.setTitle("SunCare Connect --------- Welcome Dr. Oz");
                 }
                 else if ("Patient".equals(selectedUserType)){
-                    Pane patientUIPane = PatientUI.patientUI(primaryStage, userID);
+                    Pane patientUIPane = PatientUI.patientUI(primaryStage, enteredLoginID);
                     primaryStage.getScene().setRoot(patientUIPane);
                     primaryStage.sizeToScene();
                     primaryStage.setTitle("SunCare Connect --------- Patient Portal");
