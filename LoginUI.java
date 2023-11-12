@@ -32,10 +32,9 @@ public class LoginUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        VBox root = new VBox(40); // Main container with 40 pixels of spacing between nodes
+        VBox root = new VBox(40); 
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(20, 20, 20, 20)); //top, right, left, bottom
-        //root.setSpacing(5);
 
         // Title
         Text title = new Text("SunCare Connect");
@@ -45,15 +44,15 @@ public class LoginUI extends Application {
         Text subtitle = new Text("Login Page");
         subtitle.setFont(new Font(35));
 
-        VBox titleSubtitleBox = new VBox(5, title, subtitle); // Group title and subtitle with 5 pixels of spacing
+        VBox titleSubtitleBox = new VBox(5, title, subtitle);
         titleSubtitleBox.setAlignment(Pos.CENTER);
 
 
         // Logo
         Image logo = new Image("file:/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/logo.png");
         ImageView logoView = new ImageView(logo);
-        logoView.setFitWidth(110);  // set width
-        logoView.setFitHeight(120); // set height
+        logoView.setFitWidth(110);
+        logoView.setFitHeight(120);
 
         // Radio Buttons
         ToggleGroup group = new ToggleGroup();
@@ -61,33 +60,23 @@ public class LoginUI extends Application {
         RadioButton rbPatient = new RadioButton("Patient");
         rbPatient.setToggleGroup(group);
         rbPatient.setFont(new Font(35));
-        rbPatient.setScaleX(0.6); // Scaling in the X direction
-        rbPatient.setScaleY(0.6); // Scaling in the Y direction
+        rbPatient.setScaleX(0.6);
+        rbPatient.setScaleY(0.6);
 
-        RadioButton rbRN = new RadioButton("RN");
-        rbRN.setToggleGroup(group);
-        rbRN.setFont(new Font(35));
-        rbRN.setScaleX(0.6); // Scaling in the X direction
-        rbRN.setScaleY(0.6); // Scaling in the Y direction
+        RadioButton rbNurse = new RadioButton("Nurse");
+        rbNurse.setToggleGroup(group);
+        rbNurse.setFont(new Font(35));
+        rbNurse.setScaleX(0.6);
+        rbNurse.setScaleY(0.6);
 
-        RadioButton rbProvider = new RadioButton("Provider");
-        rbProvider.setToggleGroup(group);
-        rbProvider.setFont(new Font(35));
-        rbProvider.setScaleX(0.6); // Scaling in the X direction
-        rbProvider.setScaleY(0.6); // Scaling in the Y direction
-
-        //Nurse Radio Button event handler
-       /* rbRN.setOnAction(event -> {
-            if (rbRN.isSelected()) {
-                Pane nurseUIPane = NurseUI.nurseUI(); // Get the Nurse UI pane as a Pane
-                primaryStage.getScene().setRoot(nurseUIPane); // Set the new root for the scene
-                primaryStage.sizeToScene(); // Adjust the stage size to fit the new scene size
-                primaryStage.setTitle("SunCare Connect --------- Welcome Nurse Joy"); // Set the title
-            }
-        }); */
+        RadioButton rbDoctor = new RadioButton("Doctor");
+        rbDoctor.setToggleGroup(group);
+        rbDoctor.setFont(new Font(35));
+        rbDoctor.setScaleX(0.6);
+        rbDoctor.setScaleY(0.6);
 
 
-        HBox radioButtons = new HBox(30, rbPatient, rbRN, rbProvider); // HBox for horizontal alignment with increased spacing
+        HBox radioButtons = new HBox(30, rbPatient, rbNurse, rbDoctor); 
         radioButtons.setAlignment(Pos.CENTER);
 
         // Login ID and TextField
@@ -96,7 +85,7 @@ public class LoginUI extends Application {
         TextField loginField = new TextField();
         loginField.setPrefWidth(300);
 
-        HBox loginBox = new HBox(0, loginText, loginField); // HBox for horizontal alignment with 0 pixels of spacing
+        HBox loginBox = new HBox(0, loginText, loginField);
         loginBox.setAlignment(Pos.CENTER);
 
         // Login Button
@@ -105,7 +94,6 @@ public class LoginUI extends Application {
 
         //LOGIN button EVENT HANDLER
         loginButton.setOnAction(event -> {
-            // Get the selected radio button in the ToggleGroup
             RadioButton selectedRadioButton = (RadioButton) group.getSelectedToggle();
             String selectedUserType = selectedRadioButton.getText();
 
@@ -114,30 +102,43 @@ public class LoginUI extends Application {
 
             // Check if the Login ID is in the text file and the selected radio button is for a nurse
             if (verifyUser(enteredLoginID, selectedUserType)) {
-                // If it's a nurse, switch to the NurseUI page
-                if ("RN".equals(selectedUserType)) {
+                if ("Nurse".equals(selectedUserType)) {
                     Pane nurseUIPane = NurseUI.nurseUI();
                     primaryStage.getScene().setRoot(nurseUIPane);
                     primaryStage.sizeToScene();
                     primaryStage.setTitle("SunCare Connect --------- Welcome Nurse Joy");
                 }
-                // Add more conditions here if there are other user types to handle
-            } else {
+                else if ("Doctor".equals(selectedUserType)){
+                    Pane doctorUIPane = DoctorUI.doctorUI(primaryStage);
+                    primaryStage.getScene().setRoot(doctorUIPane);
+                    primaryStage.sizeToScene();
+                    primaryStage.setTitle("SunCare Connect --------- Welcome Dr. Oz");
+                }
+                else if ("Patient".equals(selectedUserType)){
+                    Pane patientUIPane = PatientUI.patientUI(primaryStage);
+                    primaryStage.getScene().setRoot(patientUIPane);
+                    primaryStage.sizeToScene();
+                    primaryStage.setTitle("SunCare Connect --------- Patient Portal");
+                }
+
+            }
+
+
+            else {
                 // Show an alert or a message indicating the login failed
                 showAlert("Login Failed", "The entered ID is incorrect or does not have access.");
             }
 
         });
 
-        // Add all elements to the root container
         root.getChildren().addAll(titleSubtitleBox, logoView, radioButtons, loginBox, loginButton);
 
         //space between logo and radio buttons
-        VBox.setMargin(radioButtons, new Insets(10, 0, 0, 0));  // top, right, bottom, left
+        VBox.setMargin(radioButtons, new Insets(10, 0, 0, 0));
 
         //space between subtitle and logo
-        VBox.setMargin(logoView, new Insets(20, 0, 0, 0));  // top, right, bottom, left
-        VBox.setMargin(titleSubtitleBox, new Insets(50, 0, 0, 0));  // top, right, bottom, left
+        VBox.setMargin(logoView, new Insets(20, 0, 0, 0));
+        VBox.setMargin(titleSubtitleBox, new Insets(50, 0, 0, 0));
 
 
         Scene scene = new Scene(root, 1050, 700);
@@ -161,8 +162,7 @@ public class LoginUI extends Application {
    }
     // A method to verify if the user is in the text file
     boolean verifyUser(String loginID, String userType) {
-        // Implement the logic to read from the text file and check for the ID
-        // For this example, let's assume you have a text file with each line as "userID,userType"
+
         File file = new File("/Users/skyy/IdeaProjects/SunCareConnect/src/main/java/com/example/suncareconnect/users.txt");
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
