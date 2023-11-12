@@ -1,0 +1,22 @@
+###FROM###
+12345
+###TO###
+12345
+###DATE###
+2023/11/11 23:13:50
+###SUBJECT###
+Hello
+###CONTENTS###
+New appointment tomorrow
+{{{{{ENDMESSAGE}}}}}
+###FROM###
+12345
+###TO###
+12345
+###DATE###
+2023/11/11 23:14:57
+###SUBJECT###
+Please come in for your checkup
+###CONTENTS###
+10am tomorrow please thank you!
+{{{{{ENDMESSAGE}}}}}
