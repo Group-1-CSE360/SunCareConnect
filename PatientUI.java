@@ -1,4 +1,4 @@
-package application;
+package com.example.suncareconnect;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
