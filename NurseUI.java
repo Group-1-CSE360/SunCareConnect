@@ -213,13 +213,14 @@ public class NurseUI {
 	            searchButton.setDisable(true);
 	            
 	            // -----------Medical History---------------
-	            ArrayList<String> medRecordContents = new ArrayList<>();
-	            String medRecordFileName = patientID + "_Medical_History.txt";
-	            File medRecordFile = new File(medRecordFileName);
+	            // This part of my code reads the Patient history text files. It reads the file "jdoe2010_Medical_History.txt"
+	            ArrayList<String> medRecordContents = new ArrayList<>(); // This array list will store each line from the text file
+	            String medRecordFileName = patientID + "_Medical_History.txt"; // This sets up the file name
+	            File medRecordFile = new File(medRecordFileName); // This is the file
 	            try {
-					Scanner sc = new Scanner(medRecordFile);
+					Scanner sc = new Scanner(medRecordFile); 
 					while(sc.hasNextLine()) {
-						medRecordContents.add(sc.nextLine());
+						medRecordContents.add(sc.nextLine()); // This reads each line of the file and adds it to the String array list
 					}
 					sc.close();
 				} catch (FileNotFoundException e1) {
@@ -227,12 +228,12 @@ public class NurseUI {
 					e1.printStackTrace();
 				}
 	            
-	            // Fill Medical History health concerns text area
-	            int startIndex = medRecordContents.indexOf("Health Concerns");
-	            int endIndex = medRecordContents.indexOf("Medications");
-	            medHistoryText.clear();
-	            for(int i = startIndex + 1; i < endIndex; i++) {
-	            	medHistoryText.appendText(medRecordContents.get(i) + "\n");
+	            // Fill Medical History health concerns text area. The health concerns data are listed between the "Health Concerns" heading and the "Medications" heading
+	            int startIndex = medRecordContents.indexOf("Health Concerns"); // This stores the index where the heading, "Health Concerns", is in the array list.
+	            int endIndex = medRecordContents.indexOf("Medications"); // This stores the index where the heading "Medications" is in the array list
+	            medHistoryText.clear(); 
+	            for(int i = startIndex + 1 /* We want to start are the String after "Health Concerns" */; i < endIndex; i++) {
+	            	medHistoryText.appendText(medRecordContents.get(i) + "\n"); // For each health concern listing, add it to the medical history text area section, with a new line at the end of it so all the data isn't mushed together on one line.
 	            }
 	            
 	            // Fill medications in text area
