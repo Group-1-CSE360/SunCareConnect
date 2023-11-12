@@ -49,14 +49,23 @@ public class PatientUI {
 		// -------------Buttons------------------------------------------------------------------------------------------------------------------------------------
 		Button logoutButton = new Button("Log Out");
 		logoutButton.setStyle("-fx-background-color: #A2E3C4;");
+		logoutButton.setPrefHeight(27);
 
 		ToggleButton editPersonalInfoButton = new ToggleButton("Edit");
 		editPersonalInfoButton.setStyle("-fx-background-color: #A2E3C4;");
 		editPersonalInfoButton.setPrefWidth(60);
+		editPersonalInfoButton.setPrefHeight(27);
+		VBox editPersonalInfoButtonHolder = new VBox(editPersonalInfoButton);
+		editPersonalInfoButtonHolder.setPadding(new Insets(0, 0, 4, 0));
+
 
 		Button showDetailsButton = new Button("Show Details");
 		showDetailsButton.setStyle("-fx-background-color: #A2E3C4;");
-		showDetailsButton.setPrefHeight(29);
+		showDetailsButton.setPrefHeight(27);
+		
+		Button messageCenterButton = new Button("Messages");
+		messageCenterButton.setStyle("-fx-background-color: #A2E3C4;");
+		messageCenterButton.setPrefHeight(27);
 
 		// -------------Patient Info Form
 		// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,12 +73,12 @@ public class PatientUI {
 		greetingMessage.setText("Welcome, " + patientInfoContents.get(1) + " " + patientInfoContents.get(2));
 		greetingMessage.setPadding(new Insets(2, 2, 2, 2));
 		VBox greetingMessageHolder = new VBox(greetingMessage);
-		greetingMessageHolder.setPadding(new Insets(2, 2, 10, 0));
+		greetingMessageHolder.setPadding(new Insets(0, 2, 9, 0));
 
 		Label patientInfoTitle = labelMaker("Your Information: ", 1);
 		patientInfoTitle.setPrefWidth(440);
 		HBox patientInfoTitleHolder = new HBox(patientInfoTitle, editPersonalInfoButton);
-		patientInfoTitleHolder.setPadding(new Insets(2, 0, 2, 2));
+		patientInfoTitleHolder.setPadding(new Insets(2, 0, 0, 2));
 
 		HBox patientFirstName = labelTextBoxMaker("First Name: ");
 		HBox patientLastName = labelTextBoxMaker("Last Name: ");
@@ -108,7 +117,8 @@ public class PatientUI {
 		// -------------Patient Email Center
 		// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		Label messageCenterTitle = labelMaker("Message Center: ", 1);
-		VBox messageCenterHolder = new VBox(messageCenterTitle);
+		messageCenterTitle.setPrefWidth(422);
+		HBox messageCenterHolder = new HBox(messageCenterTitle, messageCenterButton);
 		messageCenterHolder.setPadding(new Insets(0, 0, 2, 0));
 
 		Label fromLabel = new Label("From: ");
@@ -152,7 +162,7 @@ public class PatientUI {
 		dateLabel.setFont(new Font("Arial", 15));
 		dateLabel.setTextFill(Color.BLACK);
 		dateLabel.setStyle("-fx-background-color: #f0f7f4;");
-		dateLabel.setPrefHeight(30);
+		dateLabel.setPrefHeight(28);
 		dateLabel.setPrefWidth(80);
 		dateLabel.setPadding(new Insets(2, 2, 2, 4));
 		dateLabel.setAlignment(Pos.CENTER_LEFT);
@@ -163,7 +173,7 @@ public class PatientUI {
 		dateDataLabel.setFont(new Font("Arial", 15));
 		dateDataLabel.setTextFill(Color.BLACK);
 		dateDataLabel.setStyle("-fx-background-color: #f0f7f4;");
-		dateDataLabel.setPrefHeight(30);
+		dateDataLabel.setPrefHeight(28);
 		dateDataLabel.setPrefWidth(120);
 		dateDataLabel.setPadding(new Insets(2, 2, 2, 4));
 		dateDataLabel.setAlignment(Pos.CENTER_LEFT);
@@ -174,7 +184,7 @@ public class PatientUI {
 		doctorLabel.setFont(new Font("Arial", 15));
 		doctorLabel.setTextFill(Color.BLACK);
 		doctorLabel.setStyle("-fx-background-color: #f0f7f4;");
-		doctorLabel.setPrefHeight(30);
+		doctorLabel.setPrefHeight(28);
 		doctorLabel.setPrefWidth(80);
 		doctorLabel.setPadding(new Insets(2, 2, 2, 4));
 		doctorLabel.setAlignment(Pos.CENTER_LEFT);
@@ -185,7 +195,7 @@ public class PatientUI {
 		doctorNameLabel.setFont(new Font("Arial", 15));
 		doctorNameLabel.setTextFill(Color.BLACK);
 		doctorNameLabel.setStyle("-fx-background-color: #f0f7f4;");
-		doctorNameLabel.setPrefHeight(30);
+		doctorNameLabel.setPrefHeight(28);
 		doctorNameLabel.setPrefWidth(120);
 		doctorNameLabel.setPadding(new Insets(2, 2, 2, 4));
 		doctorNameLabel.setAlignment(Pos.CENTER_LEFT);
@@ -216,11 +226,12 @@ public class PatientUI {
 		mainHeaderLabel.setFont(new Font("Arial", 15));
 		mainHeaderLabel.setTextFill(Color.WHITE);
 		mainHeaderLabel.setStyle("-fx-background-color: #3c493f;");
-		mainHeaderLabel.setPrefHeight(30);
+		mainHeaderLabel.setPrefHeight(28);
 		mainHeaderLabel.setPrefWidth(990);
 		mainHeaderLabel.setPadding(new Insets(2, 2, 2, 2));
 		mainHeaderLabel.setAlignment(Pos.CENTER_LEFT);
 		HBox mainHeaderLabelHolder = new HBox(mainHeaderLabel, logoutButton);
+		mainHeaderLabelHolder.setPadding(new Insets(0, 0, 10, 0));
 
 		// -------------------Merging Header and Body----------------------------
 		VBox mainVBox = new VBox(mainHeaderLabelHolder, mainBody);
@@ -231,6 +242,19 @@ public class PatientUI {
 		logoutButton.setOnAction(e -> {
 			Platform.exit();
 		});
+		
+		messageCenterButton.setOnAction(e -> {
+			Message newMessageStage = new Message();
+            try {
+				newMessageStage.start(primaryStage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            //primaryStage.getScene().setRoot(patientUIPane);
+            //primaryStage.sizeToScene();
+            //primaryStage.setTitle("SunCare Connect --------- Patient Portal");
+		});
 
 		editPersonalInfoButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -240,7 +264,7 @@ public class PatientUI {
 			public void handle(ActionEvent arg0) {
 				if (editPersonalInfoButton.isSelected()) {
 					editPersonalInfoButton.setText("Done");
-					editPersonalInfoButton.setStyle("-fx-background-color: #FFCC5C;");
+					editPersonalInfoButton.setStyle("-fx-background-color: #007BFF;");
 					editPersonalInfoButton.setStyle("-fx-text-fill: #000000;");
 
 					((TextField) (patientAddress.getChildren().get(1))).setStyle("-fx-text-fill: #000000");
@@ -383,10 +407,11 @@ public class PatientUI {
 		descriptionLabel.setStyle("-fx-background-color: #f0f7f4;");
 		descriptionLabel.setPrefHeight(LABEL_PREF_HEIGHT);
 		descriptionLabel.setPrefWidth(LABEL_PREF_WIDTH);
-		descriptionLabel.setPadding(new Insets(PADDING, PADDING, PADDING, 4));
+		descriptionLabel.setPadding(new Insets(PADDING, PADDING, PADDING, 2 * PADDING));
 		descriptionLabel.setAlignment(Pos.CENTER_LEFT);
 
 		TextField dataField = new TextField();
+		dataField.setFont(new Font(FONT, FONT_SIZE));
 		dataField.setText(patientInfoContents.get(++countIndex));
 		dataField.setStyle("-fx-text-fill: aaaaaa");
 		dataField.setPadding(new Insets(PADDING, PADDING, PADDING, PADDING));
@@ -405,7 +430,7 @@ public class PatientUI {
 		final int PADDING = 2;
 		final String FONT = "Arial";
 		final int FONT_SIZE = 15;
-		final int LABEL_PREF_HEIGHT = 30;
+		final int LABEL_PREF_HEIGHT = 28;
 		final int LABEL_PREF_WIDTH = 500;
 
 		Label descriptionLabel = new Label(dataName);
@@ -414,7 +439,7 @@ public class PatientUI {
 		descriptionLabel.setStyle("-fx-background-color: #3c493f;");
 		descriptionLabel.setPrefHeight(LABEL_PREF_HEIGHT);
 		descriptionLabel.setPrefWidth(LABEL_PREF_WIDTH);
-		descriptionLabel.setPadding(new Insets(PADDING, PADDING, PADDING, 4));
+		descriptionLabel.setPadding(new Insets(PADDING, PADDING, PADDING, 2 * PADDING));
 		descriptionLabel.setAlignment(Pos.CENTER_LEFT);
 
 		if (type == 2) {
