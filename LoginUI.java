@@ -1,4 +1,4 @@
-package com.example.suncareconnect;
+package application;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
