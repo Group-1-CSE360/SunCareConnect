@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -18,16 +19,18 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.stage.Stage;
-
 import javafx.scene.layout.Pane;
 
 public class PatientUI {
 
 	static ArrayList<String> patientInfoContents = new ArrayList<>();
-	static int countIndex = 0;
+	static ArrayList<String> patientAptContents = new ArrayList<>();
+	static int patientInfoCountIndex = 0;
+	static int appointmentCount = 0;
+	static String doctorName = "Jane Doe"; // Placeholder
+	static String doctorsNotes = "This is a placeholder."; // Placeholder
 
 	public static Pane patientUI(Stage primaryStage, String patientID) {
-		// patientID = "jdoe2010"; // Temporary
 		VBox mainLayout = new VBox();
 		mainLayout.setStyle("-fx-background-color: #B3BFB8;");
 
@@ -46,6 +49,20 @@ public class PatientUI {
 			e1.printStackTrace();
 		}
 
+		String patientAptFileName = patientID + "_AptHistory.txt";
+		File patientAptFile = new File(patientAptFileName);
+		try {
+			Scanner sc = new Scanner(patientAptFile);
+			while (sc.hasNextLine()) {
+				patientAptContents.add(sc.nextLine());
+			}
+			sc.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		appointmentCount = patientAptContents.size() / 7;
+
 		// -------------Buttons------------------------------------------------------------------------------------------------------------------------------------
 		Button logoutButton = new Button("Log Out");
 		logoutButton.setStyle("-fx-background-color: #A2E3C4;");
@@ -58,11 +75,6 @@ public class PatientUI {
 		VBox editPersonalInfoButtonHolder = new VBox(editPersonalInfoButton);
 		editPersonalInfoButtonHolder.setPadding(new Insets(0, 0, 4, 0));
 
-
-		Button showDetailsButton = new Button("Show Details");
-		showDetailsButton.setStyle("-fx-background-color: #A2E3C4;");
-		showDetailsButton.setPrefHeight(27);
-		
 		Button messageCenterButton = new Button("Messages");
 		messageCenterButton.setStyle("-fx-background-color: #A2E3C4;");
 		messageCenterButton.setPrefHeight(27);
@@ -147,8 +159,11 @@ public class PatientUI {
 
 		TextArea messagePreview = new TextArea();
 		messagePreview.setPadding(new Insets(2, 2, 2, 2));
+		messagePreview.setPrefSize(255, 255);
 		VBox messagePreviewHolder = new VBox(messagePreview);
 		messagePreviewHolder.setPadding(new Insets(2, 0, 10, 0));
+		messagePreviewHolder.prefHeight(255);
+		messagePreviewHolder.maxHeight(255);
 
 		VBox messageCenterVBox = new VBox(messageCenterHolder, messageAddressBox, messagePreviewHolder);
 
@@ -158,63 +173,20 @@ public class PatientUI {
 		VBox visitHistoryHolder = new VBox(visitHistoryTitle);
 		visitHistoryHolder.setPadding(new Insets(0, 0, 2, 0));
 
-		Label dateLabel = new Label("Date: ");
-		dateLabel.setFont(new Font("Arial", 15));
-		dateLabel.setTextFill(Color.BLACK);
-		dateLabel.setStyle("-fx-background-color: #f0f7f4;");
-		dateLabel.setPrefHeight(28);
-		dateLabel.setPrefWidth(80);
-		dateLabel.setPadding(new Insets(2, 2, 2, 4));
-		dateLabel.setAlignment(Pos.CENTER_LEFT);
-		VBox dateLabelHolder = new VBox(dateLabel);
-		dateLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+		int visitHistoryVBoxAmount = 20;
+		ArrayList<VBox> visitHistoryVBoxes = visitHisotryHBoxMaker(visitHistoryVBoxAmount);
+		VBox allVisitHistoryVBox = new VBox();
 
-		Label dateDataLabel = new Label("10/10/2023");
-		dateDataLabel.setFont(new Font("Arial", 15));
-		dateDataLabel.setTextFill(Color.BLACK);
-		dateDataLabel.setStyle("-fx-background-color: #f0f7f4;");
-		dateDataLabel.setPrefHeight(28);
-		dateDataLabel.setPrefWidth(120);
-		dateDataLabel.setPadding(new Insets(2, 2, 2, 4));
-		dateDataLabel.setAlignment(Pos.CENTER_LEFT);
-		VBox dateDataLabelHolder = new VBox(dateDataLabel);
-		dateDataLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+		for (int i = 0; i < visitHistoryVBoxAmount; ++i) {
+			allVisitHistoryVBox.getChildren().add(visitHistoryVBoxes.get(i));
+		}
 
-		Label doctorLabel = new Label("Doctor: "); // Place Holder
-		doctorLabel.setFont(new Font("Arial", 15));
-		doctorLabel.setTextFill(Color.BLACK);
-		doctorLabel.setStyle("-fx-background-color: #f0f7f4;");
-		doctorLabel.setPrefHeight(28);
-		doctorLabel.setPrefWidth(80);
-		doctorLabel.setPadding(new Insets(2, 2, 2, 4));
-		doctorLabel.setAlignment(Pos.CENTER_LEFT);
-		VBox doctorLabelHolder = new VBox(doctorLabel);
-		doctorLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+		ScrollPane aptHistoryScrollPane = new ScrollPane();
+		aptHistoryScrollPane.setContent(allVisitHistoryVBox);
+		aptHistoryScrollPane.setStyle("-fx-background: #B3BFB8");
+		aptHistoryScrollPane.setMaxHeight(600);
 
-		Label doctorNameLabel = new Label("Jane Doe");
-		doctorNameLabel.setFont(new Font("Arial", 15));
-		doctorNameLabel.setTextFill(Color.BLACK);
-		doctorNameLabel.setStyle("-fx-background-color: #f0f7f4;");
-		doctorNameLabel.setPrefHeight(28);
-		doctorNameLabel.setPrefWidth(120);
-		doctorNameLabel.setPadding(new Insets(2, 2, 2, 4));
-		doctorNameLabel.setAlignment(Pos.CENTER_LEFT);
-		VBox doctorNameLabelHolder = new VBox(doctorNameLabel);
-
-		HBox visitHistoryHBox = new HBox(dateLabelHolder, dateDataLabelHolder, doctorLabelHolder, doctorNameLabelHolder,
-				showDetailsButton);
-		visitHistoryHBox.setMaxWidth(500);
-
-		TextArea visitDetailsTextArea = new TextArea();
-		visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
-		visitDetailsTextArea.minHeight(800);
-		VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
-		visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 10, 0));
-		visitHistoryTextAreaHolder.minHeight(800);
-
-		VBox visitHistoryVBox = new VBox(visitHistoryHolder, visitHistoryHBox, visitHistoryTextAreaHolder);
-
-		VBox rightBody = new VBox(messageCenterVBox, visitHistoryVBox);
+		VBox rightBody = new VBox(messageCenterVBox, aptHistoryScrollPane);
 		rightBody.setPadding(new Insets(0, 0, 0, 10));
 		rightBody.setMaxWidth(500);
 		HBox mainBody = new HBox(leftBody, rightBody);
@@ -242,20 +214,22 @@ public class PatientUI {
 		logoutButton.setOnAction(e -> {
 			Platform.exit();
 		});
-		
+
 		messageCenterButton.setOnAction(e -> {
 			Message newMessageStage = new Message();
-            try {
+			try {
 				newMessageStage.start(primaryStage);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-            //primaryStage.getScene().setRoot(patientUIPane);
-            //primaryStage.sizeToScene();
-            //primaryStage.setTitle("SunCare Connect --------- Patient Portal");
 		});
 
+		// --------Toggle Button to Edit Personal Info-----------------
+		// On toggle on: Sets Contact Info and Pharmacy info text fields to editable.
+		// Changes button and text visual style.
+		// On toggle off: Sets Contact Info and Pharmacy info text fields to
+		// un-editable. Changes button and text visual style. Saves to file.
 		editPersonalInfoButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			private File file;
@@ -264,8 +238,7 @@ public class PatientUI {
 			public void handle(ActionEvent arg0) {
 				if (editPersonalInfoButton.isSelected()) {
 					editPersonalInfoButton.setText("Done");
-					editPersonalInfoButton.setStyle("-fx-background-color: #007BFF;");
-					editPersonalInfoButton.setStyle("-fx-text-fill: #000000;");
+					editPersonalInfoButton.setStyle("-fx-text-fill: #ffffff;");
 
 					((TextField) (patientAddress.getChildren().get(1))).setStyle("-fx-text-fill: #000000");
 					((TextField) (patientAddress.getChildren().get(1))).setEditable(true);
@@ -300,11 +273,10 @@ public class PatientUI {
 					((TextField) (pharmacyState.getChildren().get(1))).setStyle("-fx-text-fill: #000000");
 					((TextField) (pharmacyState.getChildren().get(1))).setEditable(true);
 
-					editPersonalInfoButton.setStyle("-fx-background-color: #FFCC5C;");
+					editPersonalInfoButton.setStyle("-fx-background-color: #F1B6AC;");
 
 				} else {
 					editPersonalInfoButton.setText("Edit");
-					editPersonalInfoButton.setStyle("-fx-background-color: #A2E3C4;");
 					editPersonalInfoButton.setStyle("-fx-text-fill: #000000;");
 
 					((TextField) (patientAddress.getChildren().get(1))).setStyle("-fx-text-fill: #aaaaaa");
@@ -362,22 +334,10 @@ public class PatientUI {
 						patientInfoFile.delete();
 						FileWriter fw = new FileWriter(patientInfoFile, true);
 
-						fw.write(patientInfoContents.get(0) + "\n");
-						fw.write(patientInfoContents.get(1) + "\n");
-						fw.write(patientInfoContents.get(2) + "\n");
-						fw.write(patientInfoContents.get(3) + "\n");
-						fw.write(patientInfoContents.get(4) + "\n");
-						fw.write(patientInfoContents.get(5) + "\n");
-						fw.write(patientInfoContents.get(6) + "\n");
-						fw.write(patientInfoContents.get(7) + "\n");
-						fw.write(patientInfoContents.get(8) + "\n");
-						fw.write(patientInfoContents.get(9) + "\n");
-						fw.write(patientInfoContents.get(10) + "\n");
-						fw.write(patientInfoContents.get(11) + "\n");
-						fw.write(patientInfoContents.get(12) + "\n");
-						fw.write(patientInfoContents.get(13) + "\n");
-						fw.write(patientInfoContents.get(14) + "\n");
-						fw.write(patientInfoContents.get(15) + "\n");
+						for (int i = 0; i < 16; i++) {
+							fw.write(patientInfoContents.get(i) + "\n");
+						}
+
 						fw.close();
 
 					} catch (IOException e1) {
@@ -390,9 +350,261 @@ public class PatientUI {
 
 		});
 
+		// --------Toggle Buttons to show appointment information-----------------
+		// On toggle on: Creates text field and populates it using strings from
+		// patientAptContents. patientAptContents gets contents from .txt file.
+		// On toggle off: Deletes text field. Changes button and text style.
+		// SUPPORTS 5 ENTRIES, NEEDS REFACTOR(GOOD) OR HARD CODING MORE BUTTON ACTION
+		// HANDLERS(BAD) OR FIGURE OUT HOW TOHANDLE DIFFERENT BUTTON PRESSES
+		// USING SAME CODE.
+		((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren().get(4)))
+				.setOnAction(new EventHandler<ActionEvent>() {
+					private File file;
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						if (((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+								.get(4))).isSelected()) {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setText("Close");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #ffffff;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setPrefWidth(68);
+
+							TextArea visitDetailsTextArea = new TextArea();
+							visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
+							visitDetailsTextArea.maxHeight(2);
+							VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
+							visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 2, 0));
+							visitHistoryTextAreaHolder.minHeight(800);
+
+							visitDetailsTextArea.appendText("Height (feet): " + patientAptContents.get(1) + "\n");
+							visitDetailsTextArea.appendText("Height (inches): " + patientAptContents.get(2) + "\n");
+							visitDetailsTextArea.appendText("Weight: " + patientAptContents.get(3) + "\n");
+							visitDetailsTextArea.appendText("Blood Pressure: " + patientAptContents.get(4) + "\n");
+							visitDetailsTextArea.appendText("New Allergies: " + patientAptContents.get(5) + "\n");
+							visitDetailsTextArea.appendText("New Health Concerns: " + patientAptContents.get(6) + "\n");
+							visitDetailsTextArea.appendText("Doctor's Notes: " + doctorsNotes + "\n");
+
+							visitHistoryVBoxes.get(0).getChildren().add(visitHistoryTextAreaHolder);
+
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #F1B6AC;");
+
+						} else {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setText("Details");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #000000;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(0).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #A2E3C4;");
+
+							visitHistoryVBoxes.get(0).getChildren().remove(1);
+						}
+					}
+				});
+
+		((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren().get(4)))
+				.setOnAction(new EventHandler<ActionEvent>() {
+					private File file;
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						if (((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+								.get(4))).isSelected()) {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setText("Close");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #ffffff;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setPrefWidth(68);
+
+							TextArea visitDetailsTextArea = new TextArea();
+							visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
+							visitDetailsTextArea.maxHeight(2);
+							VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
+							visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 2, 0));
+							visitHistoryTextAreaHolder.minHeight(800);
+
+							visitDetailsTextArea.appendText("Height (feet): " + patientAptContents.get(8) + "\n");
+							visitDetailsTextArea.appendText("Height (inches): " + patientAptContents.get(9) + "\n");
+							visitDetailsTextArea.appendText("Weight: " + patientAptContents.get(10) + "\n");
+							visitDetailsTextArea.appendText("Blood Pressure: " + patientAptContents.get(11) + "\n");
+							visitDetailsTextArea.appendText("New Allergies: " + patientAptContents.get(12) + "\n");
+							visitDetailsTextArea
+									.appendText("New Health Concerns: " + patientAptContents.get(13) + "\n");
+							visitDetailsTextArea.appendText("Doctor's Notes: " + doctorsNotes + "\n");
+
+							visitHistoryVBoxes.get(1).getChildren().add(visitHistoryTextAreaHolder);
+
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #F1B6AC;");
+
+						} else {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setText("Details");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #000000;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(1).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #A2E3C4;");
+
+							visitHistoryVBoxes.get(1).getChildren().remove(1);
+						}
+					}
+				});
+
+		((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren().get(4)))
+				.setOnAction(new EventHandler<ActionEvent>() {
+					private File file;
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						if (((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+								.get(4))).isSelected()) {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setText("Close");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #ffffff;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setPrefWidth(68);
+
+							TextArea visitDetailsTextArea = new TextArea();
+							visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
+							visitDetailsTextArea.maxHeight(2);
+							VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
+							visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 2, 0));
+							visitHistoryTextAreaHolder.minHeight(800);
+
+							visitDetailsTextArea.appendText("Height (feet): " + patientAptContents.get(15) + "\n");
+							visitDetailsTextArea.appendText("Height (inches): " + patientAptContents.get(16) + "\n");
+							visitDetailsTextArea.appendText("Weight: " + patientAptContents.get(17) + "\n");
+							visitDetailsTextArea.appendText("Blood Pressure: " + patientAptContents.get(18) + "\n");
+							visitDetailsTextArea.appendText("New Allergies: " + patientAptContents.get(19) + "\n");
+							visitDetailsTextArea
+									.appendText("New Health Concerns: " + patientAptContents.get(20) + "\n");
+							visitDetailsTextArea.appendText("Doctor's Notes: " + doctorsNotes + "\n");
+
+							visitHistoryVBoxes.get(2).getChildren().add(visitHistoryTextAreaHolder);
+
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #F1B6AC;");
+
+						} else {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setText("Details");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #000000;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(2).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #A2E3C4;");
+
+							visitHistoryVBoxes.get(2).getChildren().remove(1);
+						}
+					}
+				});
+
+		((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren().get(4)))
+				.setOnAction(new EventHandler<ActionEvent>() {
+					private File file;
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						if (((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+								.get(4))).isSelected()) {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setText("Close");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #ffffff;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setPrefWidth(68);
+
+							TextArea visitDetailsTextArea = new TextArea();
+							visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
+							visitDetailsTextArea.maxHeight(2);
+							VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
+							visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 2, 0));
+							visitHistoryTextAreaHolder.minHeight(800);
+
+							visitDetailsTextArea.appendText("Height (feet): " + patientAptContents.get(22) + "\n");
+							visitDetailsTextArea.appendText("Height (inches): " + patientAptContents.get(23) + "\n");
+							visitDetailsTextArea.appendText("Weight: " + patientAptContents.get(24) + "\n");
+							visitDetailsTextArea.appendText("Blood Pressure: " + patientAptContents.get(25) + "\n");
+							visitDetailsTextArea.appendText("New Allergies: " + patientAptContents.get(26) + "\n");
+							visitDetailsTextArea
+									.appendText("New Health Concerns: " + patientAptContents.get(27) + "\n");
+							visitDetailsTextArea.appendText("Doctor's Notes: " + doctorsNotes + "\n");
+
+							visitHistoryVBoxes.get(3).getChildren().add(visitHistoryTextAreaHolder);
+
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #F1B6AC;");
+
+						} else {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setText("Details");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #000000;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(3).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #A2E3C4;");
+
+							visitHistoryVBoxes.get(3).getChildren().remove(1);
+						}
+					}
+				});
+
+		((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren().get(4)))
+				.setOnAction(new EventHandler<ActionEvent>() {
+					private File file;
+
+					@Override
+					public void handle(ActionEvent arg0) {
+						if (((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+								.get(4))).isSelected()) {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setText("Close");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #ffffff;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setPrefWidth(68);
+
+							TextArea visitDetailsTextArea = new TextArea();
+							visitDetailsTextArea.setPadding(new Insets(2, 2, 2, 2));
+							visitDetailsTextArea.maxHeight(2);
+							VBox visitHistoryTextAreaHolder = new VBox(visitDetailsTextArea);
+							visitHistoryTextAreaHolder.setPadding(new Insets(2, 0, 2, 0));
+							visitHistoryTextAreaHolder.minHeight(800);
+
+							visitDetailsTextArea.appendText("Height (feet): " + patientAptContents.get(29) + "\n");
+							visitDetailsTextArea.appendText("Height (inches): " + patientAptContents.get(30) + "\n");
+							visitDetailsTextArea.appendText("Weight: " + patientAptContents.get(31) + "\n");
+							visitDetailsTextArea.appendText("Blood Pressure: " + patientAptContents.get(32) + "\n");
+							visitDetailsTextArea.appendText("New Allergies: " + patientAptContents.get(33) + "\n");
+							visitDetailsTextArea
+									.appendText("New Health Concerns: " + patientAptContents.get(34) + "\n");
+							visitDetailsTextArea.appendText("Doctor's Notes: " + doctorsNotes + "\n");
+
+							visitHistoryVBoxes.get(4).getChildren().add(visitHistoryTextAreaHolder);
+
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #F1B6AC;");
+
+						} else {
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setText("Details");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-text-fill: #000000;");
+							((ToggleButton) (((HBox) (visitHistoryVBoxes.get(4).getChildren().get(0))).getChildren()
+									.get(4))).setStyle("-fx-background-color: #A2E3C4;");
+
+							visitHistoryVBoxes.get(4).getChildren().remove(1);
+						}
+					}
+				});
+
 		return mainLayout;
 	}
 
+	// Creates the labels and text fields for patient information.
 	static HBox labelTextBoxMaker(String dataName) {
 		final int PADDING = 2;
 		final String FONT = "Arial";
@@ -412,7 +624,7 @@ public class PatientUI {
 
 		TextField dataField = new TextField();
 		dataField.setFont(new Font(FONT, FONT_SIZE));
-		dataField.setText(patientInfoContents.get(++countIndex));
+		dataField.setText(patientInfoContents.get(++patientInfoCountIndex));
 		dataField.setStyle("-fx-text-fill: aaaaaa");
 		dataField.setPadding(new Insets(PADDING, PADDING, PADDING, PADDING));
 		dataField.setPrefHeight(TF_PREF_HEIGHT);
@@ -426,6 +638,7 @@ public class PatientUI {
 		return inputFormHBox;
 	}
 
+	//// Creates the title labels for patient information.
 	static Label labelMaker(String dataName, int type) {
 		final int PADDING = 2;
 		final String FONT = "Arial";
@@ -450,4 +663,91 @@ public class PatientUI {
 		return descriptionLabel;
 	}
 
+	// Creates the labels and toggle button for the appointment list part of UI.
+	static ArrayList<VBox> visitHisotryHBoxMaker(int count) {
+		ArrayList<VBox> newArrayListVBoxes = new ArrayList<VBox>();
+		int appointmentCounter = appointmentCount;
+		int dateIndex = 0;
+
+		for (int i = 1; i <= count; i++) {
+			Label dateLabel = new Label("Date: ");
+			dateLabel.setFont(new Font("Arial", 15));
+			dateLabel.setTextFill(Color.GRAY);
+			dateLabel.setStyle("-fx-background-color: #d8dedb;");
+			dateLabel.setPrefHeight(28);
+			dateLabel.setPrefWidth(80);
+			dateLabel.setPadding(new Insets(2, 2, 2, 4));
+			dateLabel.setAlignment(Pos.CENTER_LEFT);
+			VBox dateLabelHolder = new VBox(dateLabel);
+			dateLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+
+			Label dateDataLabel = new Label("");
+			dateDataLabel.setFont(new Font("Arial", 15));
+			dateDataLabel.setTextFill(Color.BLACK);
+			dateDataLabel.setStyle("-fx-background-color: #d8dedb;");
+			dateDataLabel.setPrefHeight(28);
+			dateDataLabel.setPrefWidth(120);
+			dateDataLabel.setPadding(new Insets(2, 2, 2, 4));
+			dateDataLabel.setAlignment(Pos.CENTER_LEFT);
+			VBox dateDataLabelHolder = new VBox(dateDataLabel);
+			dateDataLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+
+			Label doctorLabel = new Label("Doctor: ");
+			doctorLabel.setFont(new Font("Arial", 15));
+			doctorLabel.setTextFill(Color.GRAY);
+			doctorLabel.setStyle("-fx-background-color: #d8dedb;");
+			doctorLabel.setPrefHeight(28);
+			doctorLabel.setPrefWidth(80);
+			doctorLabel.setPadding(new Insets(2, 2, 2, 4));
+			doctorLabel.setAlignment(Pos.CENTER_LEFT);
+			VBox doctorLabelHolder = new VBox(doctorLabel);
+			doctorLabelHolder.setPadding(new Insets(0, 2, 0, 0));
+
+			Label doctorNameLabel = new Label("");
+			doctorNameLabel.setFont(new Font("Arial", 15));
+			doctorNameLabel.setTextFill(Color.BLACK);
+			doctorNameLabel.setStyle("-fx-background-color: #d8dedb;");
+			doctorNameLabel.setPrefHeight(28);
+			doctorNameLabel.setPrefWidth(120);
+			doctorNameLabel.setPadding(new Insets(2, 2, 2, 4));
+			doctorNameLabel.setAlignment(Pos.CENTER_LEFT);
+			VBox doctorNameLabelHolder = new VBox(doctorNameLabel);
+
+			ToggleButton showDetailsToggleButton = new ToggleButton("Details");
+			showDetailsToggleButton.setDisable(true);
+			showDetailsToggleButton.setStyle("-fx-text-fill: #aaaaaa;");
+			showDetailsToggleButton.setStyle("-fx-background-color: #888888;");
+			showDetailsToggleButton.setPrefHeight(27);
+			showDetailsToggleButton.setPrefWidth(68);
+
+			HBox visitHistoryHeadHBox = new HBox(dateLabelHolder, dateDataLabelHolder, doctorLabelHolder,
+					doctorNameLabelHolder, showDetailsToggleButton);
+			visitHistoryHeadHBox.setMaxWidth(500);
+			VBox visitHistoryVBox = new VBox(visitHistoryHeadHBox);
+			visitHistoryVBox.setPadding(new Insets(0, 0, 2, 0));
+
+			if (appointmentCounter > 0) {
+				dateLabel.setStyle("-fx-background-color: #f0f7f4;");
+				dateDataLabel.setStyle("-fx-background-color: #f0f7f4;");
+				doctorLabel.setStyle("-fx-background-color: #f0f7f4;");
+				doctorNameLabel.setStyle("-fx-background-color: #f0f7f4;");
+
+				dateLabel.setTextFill(Color.BLACK);
+				dateDataLabel.setText(patientAptContents.get(dateIndex));
+				dateIndex = dateIndex + 7;
+
+				doctorLabel.setTextFill(Color.BLACK);
+				doctorNameLabel.setText(doctorName); // Place Holder
+
+				showDetailsToggleButton.setDisable(false);
+				showDetailsToggleButton.setStyle("-fx-text-fill: #000000;");
+				showDetailsToggleButton.setStyle("-fx-background-color: #A2E3C4;");
+			}
+
+			newArrayListVBoxes.add(visitHistoryVBox);
+			--appointmentCounter;
+		}
+
+		return newArrayListVBoxes;
+	}
 }
