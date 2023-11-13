@@ -159,7 +159,17 @@ public class NurseUI {
         logoutButton.setOnAction( e-> {
         	Platform.exit();
         });
-
+        
+        mailButton.setOnAction( e-> {
+        	Stage nextStage = new Stage();
+        	Message message2 = new Message();
+			try {
+				message2.start(nextStage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        });
 
         // --------Search Button Actions--------------------
         searchButton.setOnAction( e-> {
