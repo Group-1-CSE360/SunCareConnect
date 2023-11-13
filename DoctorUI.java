@@ -1,4 +1,4 @@
-package com.example.suncareconnect;
+package application;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -312,6 +312,16 @@ public class DoctorUI {
 
         // Mail button
         Button mailButton = new Button("Mail");
+        mailButton.setOnAction( e-> {
+        	Stage nextStage = new Stage();
+        	Message message2 = new Message();
+			try {
+				message2.start(nextStage);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        });
 
         // Log out button
         Button logoutButton = new Button("Log out");
