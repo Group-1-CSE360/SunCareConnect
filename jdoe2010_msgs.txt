@@ -1,26 +1,26 @@
 ###MESSAGEID###
-2
+1
 ###FROM###
-jdoe2010
-###TO###
 12345
+###TO###
+jdoe2010
 ###DATE###
 13/11/2023 21:55
 ###SUBJECT###
-RE: He
+Hello
 ###CONTENTS###
-Ok will do!
+Plesae come in for your appt
 {{{{{ENDMESSAGE}}}}}
 ###MESSAGEID###
-3
+2
 ###FROM###
-jdoe2010
-###TO###
 12345
+###TO###
+jdoe2010
 ###DATE###
 13/11/2023 21:55
 ###SUBJECT###
-RE: RE
+RE: RE: H
 ###CONTENTS###
-No problem!
+Thanks!
 {{{{{ENDMESSAGE}}}}}
